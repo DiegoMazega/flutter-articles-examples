@@ -6,3 +6,4 @@
 ### Examples in this repository: 
 
 * Flex Widgets inside a ScrollView.
+* Dynamic icon.
