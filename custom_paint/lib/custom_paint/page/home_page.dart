@@ -35,6 +35,7 @@ class HomePage extends HookConsumerWidget {
         currentSketch: controller.currentSketch,
         allSketch: controller.allSketch,
         animationController: controller.animationController,
+        shape: controller.shape,
       ),
     );
   }

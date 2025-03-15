@@ -174,8 +174,13 @@ class DrawerPaint extends HookConsumerWidget {
           ref,
         ),
         _shapeOption(
-          FontAwesomeIcons.pencil,
+          FontAwesomeIcons.minus,
           PaintShapes.line,
+          ref,
+        ),
+        _shapeOption(
+          FontAwesomeIcons.pencil,
+          PaintShapes.free,
           ref,
         ),
         _shapeOption(

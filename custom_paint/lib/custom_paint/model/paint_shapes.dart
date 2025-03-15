@@ -1,1 +1,1 @@
-enum PaintShapes { erase, square, circle, line }
+enum PaintShapes { erase, square, circle, line, free }

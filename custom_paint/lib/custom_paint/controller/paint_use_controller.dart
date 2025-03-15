@@ -35,7 +35,7 @@ PaintUseController paintUseController() {
   final polygonSides = useState<int>(3);
   final currentSketch = useState<SketchModel?>(null);
   final allSketch = useState<List<SketchModel>>([]);
-  final shape = useState<PaintShapes>(PaintShapes.line);
+  final shape = useState<PaintShapes>(PaintShapes.free);
   final animationController = useAnimationController(
     duration: const Duration(milliseconds: 250),
     initialValue: 1,

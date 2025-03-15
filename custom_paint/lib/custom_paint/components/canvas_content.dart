@@ -1,5 +1,7 @@
+import 'package:custom_paint/custom_paint/model/paint_shapes.dart';
 import 'package:custom_paint/custom_paint/model/sketch_model.dart';
 import 'package:custom_paint/custom_paint/components/sketch_paint.dart';
+import 'package:custom_paint/custom_paint/model/sketch_type_enum.dart';
 import 'package:flutter/material.dart';
 
 class CanvasContent extends StatelessWidget {
@@ -13,6 +15,7 @@ class CanvasContent extends StatelessWidget {
     required this.currentSketch,
     required this.allSketch,
     required this.animationController,
+    required this.shape,
   });
 
   final ValueNotifier<Color> selectedColor;
@@ -23,6 +26,7 @@ class CanvasContent extends StatelessWidget {
   final ValueNotifier<SketchModel?> currentSketch;
   final ValueNotifier<List<SketchModel>> allSketch;
   final AnimationController animationController;
+  final ValueNotifier<PaintShapes> shape;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,7 @@ class CanvasContent extends StatelessWidget {
           points: [offset],
           color: selectedColor.value,
           size: strokeSize.value,
+          type: _getType(),
         );
       },
       onPointerMove: (event) {
@@ -65,6 +70,7 @@ class CanvasContent extends StatelessWidget {
           points: points,
           color: selectedColor.value,
           size: strokeSize.value,
+          type: _getType(),
         );
       },
       onPointerUp: (_) {
@@ -92,5 +98,20 @@ class CanvasContent extends StatelessWidget {
   Offset _getOffset<T extends PointerEvent>(T event, BuildContext context) {
     final box = context.findRenderObject() as RenderBox;
     return box.globalToLocal(event.position);
+  }
+
+  SketchType _getType() {
+    switch (shape.value) {
+      case PaintShapes.circle:
+        return SketchType.circle;
+      case PaintShapes.line:
+        return SketchType.line;
+      case PaintShapes.square:
+        return SketchType.rectangle;
+      case PaintShapes.free:
+        return SketchType.free;
+      case PaintShapes.erase:
+        return SketchType.free;
+    }
   }
 }
