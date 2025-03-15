@@ -1,9 +1,9 @@
 import 'package:custom_paint/custom_paint/model/sketch_model.dart';
-import 'package:custom_paint/custom_paint/sketch_paint.dart';
+import 'package:custom_paint/custom_paint/components/sketch_paint.dart';
 import 'package:flutter/material.dart';
 
-class CanvasPage extends StatelessWidget {
-  const CanvasPage({
+class CanvasContent extends StatelessWidget {
+  const CanvasContent({
     super.key,
     required this.selectedColor,
     required this.strokeSize,

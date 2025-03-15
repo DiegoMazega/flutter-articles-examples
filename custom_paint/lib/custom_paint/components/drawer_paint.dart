@@ -1,9 +1,13 @@
+import 'package:custom_paint/custom_paint/controller/paint_colors.dart';
+import 'package:custom_paint/custom_paint/domain/fix_color.dart';
+import 'package:custom_paint/custom_paint/domain/fix_shape.dart';
 import 'package:custom_paint/custom_paint/model/paint_shapes.dart';
+import 'package:custom_paint/custom_paint/store/paint_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DrawerPaint extends HookWidget {
+class DrawerPaint extends HookConsumerWidget {
   const DrawerPaint({
     super.key,
     required this.selectedColor,
@@ -15,31 +19,8 @@ class DrawerPaint extends HookWidget {
   final ValueNotifier<double> brunchSize;
   final ValueNotifier<PaintShapes> shape;
 
-  Set<Color> get _palletColors => {
-        Colors.white,
-        Colors.black,
-        Colors.yellow,
-        Colors.green,
-        Colors.blue,
-        Colors.red,
-        Colors.purple,
-        Colors.pink,
-        Colors.orange,
-        Colors.brown,
-        Colors.cyan,
-        Colors.teal,
-        Colors.lightGreen,
-        Colors.lightBlue,
-        Colors.amber,
-        Colors.redAccent,
-        Colors.purpleAccent,
-        Colors.pinkAccent,
-        Colors.deepOrangeAccent,
-        Colors.lime,
-      };
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(20),
       color: Colors.white,
@@ -54,9 +35,9 @@ class DrawerPaint extends HookWidget {
             color: Colors.black,
             thickness: 1.5,
           ),
-          _shapes(),
+          _shapes(ref),
           _colorTitle(),
-          _colorOptions(),
+          _colorOptions(ref),
           _sizeTitle(),
           _brunchSize()
         ],
@@ -108,12 +89,24 @@ class DrawerPaint extends HookWidget {
     );
   }
 
-  Widget _colorOptions() {
+  Widget _colorOptions(WidgetRef ref) {
     return Wrap(
       runSpacing: 4,
       children: [
-        ..._palletColors.map((color) => InkWell(
-              onTap: () => selectedColor.value = color,
+        ...PaintColors.palletColors.map((color) => InkWell(
+              onTap: () {
+                ref
+                    .read(paintStoreProvider.notifier)
+                    .updateLastSelectedColor(color);
+
+                fixShapeWhenSetColor(
+                  lastChoosenShape:
+                      ref.read(paintStoreProvider).lastChoosenShape,
+                  currentShape: shape,
+                );
+
+                selectedColor.value = color;
+              },
               child: Container(
                 margin: const EdgeInsets.only(right: 8),
                 height: 20,
@@ -171,32 +164,66 @@ class DrawerPaint extends HookWidget {
     );
   }
 
-  Widget _shapes() {
+  Widget _shapes(WidgetRef ref) {
     return Wrap(
       spacing: 12,
       children: [
-        _shapeOption(FontAwesomeIcons.eraser, PaintShapes.erase),
-        _shapeOption(FontAwesomeIcons.pencil, PaintShapes.line),
-        _shapeOption(FontAwesomeIcons.square, PaintShapes.square),
-        _shapeOption(FontAwesomeIcons.circle, PaintShapes.circle),
+        _shapeOption(
+          FontAwesomeIcons.eraser,
+          PaintShapes.erase,
+          ref,
+        ),
+        _shapeOption(
+          FontAwesomeIcons.pencil,
+          PaintShapes.line,
+          ref,
+        ),
+        _shapeOption(
+          FontAwesomeIcons.square,
+          PaintShapes.square,
+          ref,
+        ),
+        _shapeOption(
+          FontAwesomeIcons.circle,
+          PaintShapes.circle,
+          ref,
+        ),
       ],
     );
   }
 
-  Widget _shapeOption(IconData icon, PaintShapes shapeValue) {
+  Widget _shapeOption(
+    IconData icon,
+    PaintShapes shapeValue,
+    WidgetRef ref,
+  ) {
     return GestureDetector(
-      onTap: () => shape.value = shapeValue,
+      onTap: () {
+        ref
+            .read(paintStoreProvider.notifier)
+            .updateLastSelectedShape(shapeValue);
+
+        fixColorWhenSetShape(
+          shapeSelected: shapeValue,
+          currentShape: shape,
+          selectedColor: selectedColor,
+          lastChoosenColor: ref.read(paintStoreProvider).lastChoosenColor,
+        );
+
+        shape.value = shapeValue;
+      },
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
             border: Border.all(
                 color: shape.value == shapeValue
-                    ? selectedColor.value
-                    : Colors.black54)),
+                    ? PaintColors.selectIconColor
+                    : PaintColors.notSelectIconColor)),
         child: FaIcon(
           icon,
-          color:
-              shape.value == shapeValue ? selectedColor.value : Colors.black54,
+          color: shape.value == shapeValue
+              ? PaintColors.selectIconColor
+              : PaintColors.notSelectIconColor,
         ),
       ),
     );
